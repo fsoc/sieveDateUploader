@@ -6,7 +6,7 @@ Also has the added functionality to block specific email aliases.
 python slib.py -h
 
 ## Usage
-python slib.py -d domain -f banfile
+python slib.py -d domain -f banfile -u username -p password
 
 ## Banfile
 add one entry per line like so:

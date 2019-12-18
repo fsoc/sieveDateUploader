@@ -36,7 +36,7 @@ def genSuffixes(startYear):
             for m in range(1, monthRange + 1):
                 if (m < 10):
                     m = "0"+ str(m)
-                    suffixes.append("%s.%s" % (m, y))
+                suffixes.append("%s.%s" % (m, y))
         if (y < now.year):
             suffixes.append(y)
     return suffixes
@@ -52,7 +52,7 @@ def genAdrs(domain, startYear):
 def generateCalendarScript(domain, startYear):
     adrs = ", \n".join(genAdrs(domain, startYear))
 
-    script = """require ["fileinto","imap4flags", "regex"];
+    script = """require ["fileinto","imap4flags", "regex", "reject"];
 if address :regex "to" [%s]
 {
     setflag "\\\\Seen";
@@ -67,8 +67,7 @@ def generateBanFileScript(banFile, domain):
 
 if address :is "to" [%s]
 {
-    setflag "\\\\Seen";
-    fileinto "Junk";
+    reject "unwanted sender.";
 }"""
     return script % (adrs)
 
