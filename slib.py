@@ -60,6 +60,7 @@ if address :regex "to" [%s]
 {
     setflag "\\\\Seen";
     fileinto "Junk";
+    stop;
 }"""
     return script % (adrs)
 
@@ -70,6 +71,7 @@ def generateBanFileScript(banFile, domain):
 if address :is "to" [%s]
 {
     reject "unwanted sender.";
+    stop;
 }"""
     return script % (adrs)
 
