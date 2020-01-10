@@ -70,7 +70,7 @@ def generateBanFileScript(banFile, domain):
     script = """
 if address :is "to" [%s]
 {
-    reject "unwanted sender.";
+    reject "I hereby request a GDPR removal from all your systems.";
     stop;
 }"""
     return script % (adrs)
