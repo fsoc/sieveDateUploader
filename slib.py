@@ -48,11 +48,14 @@ def genAdrs(domain, startYear):
         adrs.append(adr)
     return adrs
 
+def generateHeader():
+    return """
+require ["fileinto","imap4flags", "regex", "reject"];"""
 
 def generateCalendarScript(domain, startYear):
     adrs = ", \n".join(genAdrs(domain, startYear))
 
-    script = """require ["fileinto","imap4flags", "regex", "reject"];
+    script = """
 if address :regex "to" [%s]
 {
     setflag "\\\\Seen";
@@ -64,7 +67,6 @@ def generateBanFileScript(banFile, domain):
     adrs = genBanFileAdrs(banFile, domain)
 
     script = """
-
 if address :is "to" [%s]
 {
     reject "unwanted sender.";
@@ -84,8 +86,8 @@ def genBanFileAdrs(banFile, domain):
 def generateScripts(domain, banFile, startYear):
     s = generateCalendarScript(domain, startYear)
     if (banFile is not None):
-        s = s + generateBanFileScript(banFile, domain)
-    return s
+        s = generateBanFileScript(banFile, domain) + s
+    return generateHeader() + s
 
 parser = ArgumentParser()
 parser.add_argument("-d", dest="domain", help="domain name", required=True)
