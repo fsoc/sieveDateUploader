@@ -21,27 +21,21 @@ and it will block foo@domain, bar@domain
 ## Example
 This is how an sieve-config uploaded might look like:
 ``` 
-require ["fileinto","imap4flags", "regex"];
-if address :regex "to" [".*2016@example.com",
-   ".*2017@example.com",
-   ".*2018@example.com",
-   ".*01.2019@example.com",
-   ".*02.2019@example.com",
-   ".*03.2019@example.com",
-   ".*04.2019@example.com",
-   ".*05.2019@example.com",
-   ".*06.2019@example.com",
-   ".*07.2019@example.com",
-   ".*08.2019@example.com"]
+require ["fileinto","imap4flags", "regex", "reject"];
+if address :is "to" ["foo@example.com",
+"bar@example.com"]
 {
-  setflag "\\Seen";
-  fileinto "Junk";
+    reject "I hereby request a GDPR removal from all your systems.";
+    stop;
 }
-if address :is "to" ["webshop1@example.com",
-   "spamhere@example.com",
-]
+if address :regex "to" [".*2016@example.com", 
+".*2017@example.com", 
+".*2018@example.com", 
+".*2019@example.com", 
+".*01.2020@example.com"]
 {
-  setflag "\\Seen";
-  fileinto "Junk";
+    setflag "\\Seen";
+    fileinto "Junk";
+    stop;
 }
 ``` 
