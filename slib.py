@@ -44,13 +44,13 @@ def genSuffixes(startYear):
 def genAdrs(domain, startYear):
     adrs = []
     for suffix in genSuffixes(startYear):
-        adr = "\".*%s@%s\"" % (suffix, domain)
+        adr = "\".*%s(.mv)?@%s\"" % (suffix, domain)
         adrs.append(adr)
     return adrs
 
 def generateHeader():
     return """
-require ["fileinto","imap4flags", "regex", "reject"];"""
+require ["copy", "fileinto","imap4flags", "regex", "reject", "editheader", "variables"];"""
 
 def generateCalendarScript(domain, startYear):
     adrs = ", \n".join(genAdrs(domain, startYear))
@@ -63,6 +63,25 @@ if address :regex "to" [%s]
     stop;
 }"""
     return script % (adrs)
+
+def generateCopyScript(domain, copyName):
+
+    script = """
+if address :regex "to" [".*.mv@%s"]
+{
+    if header :matches "Subject" "*" {
+        set "subject" "${1}";
+    }
+    if header :matches "To" "*" {
+        set "to" "${1}";
+    }
+
+    deleteheader "Subject";
+    addheader :last "Subject" " ${subject} [redir, to:${to}]";
+    redirect :copy "%s@%s";
+    stop;
+}"""
+    return script % (domain, copyName, domain)
 
 def generateBanFileScript(banFile, domain):
     adrs = genBanFileAdrs(banFile, domain)
@@ -85,20 +104,21 @@ def genBanFileAdrs(banFile, domain):
 
     return ", \n".join(lines)
 
-def generateScripts(domain, banFile, startYear):
+def generateScripts(domain, banFile, startYear, copyName):
     s = generateCalendarScript(domain, startYear)
     if (banFile is not None):
         s = generateBanFileScript(banFile, domain) + s
-    return generateHeader() + s
+    return generateHeader() + s + generateCopyScript(domain, copyName)
 
 parser = ArgumentParser()
 parser.add_argument("-d", dest="domain", help="domain name", required=True)
 parser.add_argument("-f", dest="banFile", help="explicit ban file")
 parser.add_argument("-u", dest="usr", required=True)
 parser.add_argument("-p", dest="pwd", required=True)
+parser.add_argument("-m", dest="copyName", required=True)
 
 args = parser.parse_args()
 
 
-print(generateScripts(args.domain, args.banFile, 2016))
-setScript(args.usr, args.pwd, generateScripts(args.domain, args.banFile, 2016))
+print(generateScripts(args.domain, args.banFile, 2016, args.copyName))
+setScript(args.usr, args.pwd, generateScripts(args.domain, args.banFile, 2016,args.copyName))
