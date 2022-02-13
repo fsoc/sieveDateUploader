@@ -2,11 +2,15 @@
 Uploads a sievescript blocking date-based catch-all email prefixes.
 Also has the added functionality to block specific email aliases.
 
+A typical use-case is when you shop online and dont want to get any spam months or years after the purchase. Just type in an email like user.12.2024@example.com, so if you shop in november then the tracking code for shipping will be delivered to you. But as soon as december hits, any further emails will be send to the spam-folder.
+
+There is also the possibility to use a "mv" suffix to send emails copies to another inbox in the domain.
+
 ## Help
 python slib.py -h
 
 ## Usage
-python slib.py -d domain -f banfile -u username -p password
+python slib.py -d domain -f banfile -u username -p password -m copydestination
 
 ## Banfile
 add one entry per line like so:
