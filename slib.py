@@ -59,7 +59,7 @@ def generateCalendarScript(domain, startYear):
 if address :regex ["to","delivered-to"] [%s]
 {
     if address :regex ["to","delivered-to"] [".*\.bf\..*"] {
-        reject "I hereby request a GDPR removal from all your systems.";
+        fileinto "ban";
         stop;
     } else {
         setflag "\\\\Seen";
