@@ -58,16 +58,21 @@ def generateCalendarScript(domain, startYear):
     script = """
 if address :regex ["to","delivered-to"] [%s]
 {
-    setflag "\\\\Seen";
-    fileinto "Junk";
-    stop;
+    if address :regex ["to","delivered-to"] [".*\.bf\..*"] {
+        reject "I hereby request a GDPR removal from all your systems.";
+        stop;
+    } else {
+        setflag "\\\\Seen";
+        fileinto "Junk";
+        stop;
+    }
 }"""
     return script % (adrs)
 
 def generateCopyScript(domain, copyName):
 
     script = """
-if address :regex ["to","delivered-to"] [".*.mv@%s"]
+    if address :regex ["to","delivered-to"] [".*\.mv(\..*)?@%s"]
 {
     if header :matches "Subject" "*" {
         set "subject" "${1}";
